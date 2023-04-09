@@ -25,11 +25,10 @@ class VK:
             photos = {}
             for item in response.json()['response']['items']:
                 #в списке sizes размеры картинок по умолчанию упорядочены от мал к бол, поэтому всегда берем последнее значение
-                #jpg_url = item['sizes'][-1]['url']
+                #!!! не всегда список отсортирован по размеру, поэтому сперва сортируем, а потом берем последний
                 sorted_sizes = sorted(item['sizes'], key=lambda d: d['type'])
                 jpg_url = sorted_sizes[-1]['url']
                 size_type = sorted_sizes[-1]['type']
-                #jpg_url_w = [w for w in item['sizes'] if w['type'] == 'w' or w['type'] == 'z'][0]['url']
 
                 likes_count = item['likes']['count']
                 if likes_count in photos:
@@ -37,10 +36,9 @@ class VK:
                     jpg_date = datetime.utcfromtimestamp(jpg_date_int).strftime('%Y-%m-%d_%H-%M-%S')
                     filename = f'{str(likes_count)}_{jpg_date}'
                     photos[filename] = {'url': jpg_url, 'type': size_type}
-                    #photos['type'] = size_type
+
                 else:
                     photos[likes_count] = {'url': jpg_url, 'type': size_type}
-                    #photos['type'] = size_type
         return json.dumps(photos)
 
 class YaUploader:
